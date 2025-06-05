@@ -1,0 +1,44 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+
+development:
+  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch('DB_HOST', 'localhost') %>
+  username: <%= ENV.fetch('POSTGRES_USER', 'postgres') %>
+  password: <%= ENV.fetch('POSTGRES_PASSWORD', 'password') %>
+  database: habittracker_pro_development
+  pool: 5
+
+test:
+  <<: *default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch('DB_HOST', 'localhost') %>
+  username: <%= ENV.fetch('POSTGRES_USER', 'postgres') %>
+  password: <%= ENV.fetch('POSTGRES_PASSWORD', 'password') %>
+  database: habittracker_pro_test
+  pool: 5
+
+production:
+  primary: &primary_production
+    <<: *default
+    database: backend_production
+    username: backend
+    password: <%= ENV["BACKEND_DATABASE_PASSWORD"] %>
+  cache:
+    <<: *primary_production
+    database: backend_production_cache
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *primary_production
+    database: backend_production_queue
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *primary_production
+    database: backend_production_cable
+    migrations_paths: db/cable_migrate
