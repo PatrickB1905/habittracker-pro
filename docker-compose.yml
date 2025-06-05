@@ -1,0 +1,41 @@
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend:/app
+    ports:
+      - "3000:3000"
+    depends_on:
+      - db
+    environment:
+      RAILS_ENV: development
+      DB_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    volumes:
+      - ./frontend:/app
+    ports:
+      - "3001:3000"
+    stdin_open: true
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
